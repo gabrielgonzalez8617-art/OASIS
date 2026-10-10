@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OASIS - Monitoreo IoT de Calidad de Agua</title>
+    <title>CHIPAWAK - Monitoreo IoT de Calidad de Agua y Microplásticos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-   
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -17,605 +16,259 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        oasis: {
-                            dark: '#13293D',    // Dark Blue
-                            pink: '#DA627D',    // Light Pink
-                            magenta: '#A53860', // Dark Pink/Magenta
-                            light: '#F7F9F9',   // Off-White (used for text now)
-                            teal: '#50808E'     // Teal
+                        brand: {
+                            blue: '#2563eb',
+                            purple: '#9333ea',
+                            orange: '#f97316'
                         }
-                    },
-                    backgroundImage: {
-                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-                        'mesh-dark': 'radial-gradient(at 40% 20%, hsla(339,50%,37%,0.3) 0px, transparent 50%), radial-gradient(at 80% 0%, hsla(193,28%,43%,0.3) 0px, transparent 50%), radial-gradient(at 0% 50%, hsla(209,53%,15%,1) 0px, transparent 50%)',
                     }
                 }
             }
         }
     </script>
-   
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0b1824; color: #F7F9F9; }
-       
-        /* Vibrant Glassmorphism */
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1e293b; }
         .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
         }
-       
         .glass-card-hover:hover {
-            border-color: rgba(218, 98, 125, 0.5); /* oasis-pink */
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px -5px rgba(218, 98, 125, 0.3);
-            background: rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-color: rgba(147, 51, 234, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
         }
-       
-        /* High contrast glowing effects */
-        .glow-text-teal { text-shadow: 0 0 15px rgba(80, 128, 142, 0.6); }
-        .glow-text-pink { text-shadow: 0 0 15px rgba(218, 98, 125, 0.6); }
-        .glow-box-magenta { box-shadow: 0 0 25px -5px rgba(165, 56, 96, 0.6); }
-       
-        .pulse-live { animation: pulse-ring 2s infinite; }
-       
+        .glow-effect {
+            box-shadow: 0 0 30px -5px rgba(37, 99, 235, 0.15);
+        }
+        .pulse-live {
+            animation: pulse-ring 2s infinite;
+        }
         @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(80, 128, 142, 0.7); }
-            70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 10px rgba(80, 128, 142, 0); }
-            100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(80, 128, 142, 0); }
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
         }
-
-        .bg-animated-gradient {
-            background-size: 200% 200%;
-            animation: gradientMove 8s ease infinite;
-        }
-
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-       
-        /* Custom scrollbar for dark theme */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #13293D; }
-        ::-webkit-scrollbar-thumb { background: #A53860; border-radius: 5px; border: 2px solid #13293D; }
-        ::-webkit-scrollbar-thumb:hover { background: #DA627D; }
     </style>
 </head>
-<body class="antialiased selection:bg-oasis-pink selection:text-white overflow-x-hidden">
-
-    <!-- Ambient background glows -->
-    <div class="fixed inset-0 z-[-1] bg-oasis-dark mesh-dark opacity-80 pointer-events-none"></div>
+<body class="bg-white text-slate-800 antialiased selection:bg-purple-500 selection:text-white">
 
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 glass-card border-b border-white/10 px-4 lg:px-8 py-3">
+    <nav class="sticky top-0 z-50 glass-card border-b border-slate-100 px-4 lg:px-8 py-3">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-oasis-magenta to-oasis-pink flex items-center justify-center text-white font-bold text-xl shadow-[0_0_15px_rgba(218,98,125,0.4)]">
-                    <i class="fa-solid fa-water"></i>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-droplet"></i>
                 </div>
                 <div>
-                    <span class="text-2xl font-black tracking-wider text-white">OASIS</span>
-                    <span class="block text-[10px] uppercase tracking-widest text-oasis-pink font-bold">Monitoreo IA</span>
+                    <span class="text-xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500">CHIPAWAK</span>
+                    <span class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold">IoT & IA Calidad de Agua</span>
                 </div>
             </div>
 
             <!-- Desktop Links -->
-            <div class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-gray-300">
-                <a href="#problema" class="hover:text-oasis-pink hover:glow-text-pink transition">Problema</a>
-                <a href="#ods" class="hover:text-white transition">ODS</a>
-                <a href="#tecnologia" class="hover:text-oasis-teal hover:glow-text-teal transition">Tecnología</a>
-                <a href="#dashboard" class="hover:text-oasis-magenta transition">Dashboard</a>
-                <a href="#negocio" class="hover:text-white transition">Negocio</a>
-                <a href="#equipo" class="hover:text-oasis-pink transition">Equipo</a>
+            <div class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-slate-600">
+                <a href="#problema" class="hover:text-blue-600 transition">Problema</a>
+                <a href="#ods" class="hover:text-purple-600 transition">ODS</a>
+                <a href="#tecnologia" class="hover:text-orange-500 transition">Tecnología</a>
+                <a href="#dashboard" class="hover:text-blue-600 transition">Dashboard Vivo</a>
+                <a href="#negocio" class="hover:text-purple-600 transition">Negocio</a>
+                <a href="#equipo" class="hover:text-orange-500 transition">Equipo</a>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-oasis-teal/20 border border-oasis-teal/40 text-oasis-teal text-xs font-bold shadow-[0_0_10px_rgba(80,128,142,0.2)]">
-                    <span class="w-2 h-2 rounded-full bg-oasis-teal animate-ping"></span>
-                    En Línea
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-600 text-xs font-bold shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+                    Sistema en Línea
                 </div>
-                <a href="#dashboard" class="px-5 py-2.5 rounded-lg bg-gradient-to-r from-oasis-magenta to-oasis-pink hover:from-oasis-pink hover:to-oasis-magenta text-white font-bold text-xs sm:text-sm transition-all shadow-[0_0_15px_rgba(165,56,96,0.5)] flex items-center gap-2 border border-white/20">
-                    Ver Demo <i class="fa-solid fa-satellite-dish"></i>
+                <a href="#dashboard" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs sm:text-sm transition shadow-md shadow-blue-600/20">
+                    Probar Demo <i class="fa-solid fa-play ml-1"></i>
                 </a>
             </div>
         </div>
     </nav>
 
-    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16 px-4 bg-gradient-to-b from-[#13293D] via-[#1a3a55] to-[#13293D]">
-        <!-- Immersive Colorful Blobs -->
-        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-oasis-magenta rounded-full blur-[150px] opacity-30 mix-blend-screen pointer-events-none"></div>
-        <div class="absolute bottom-0 left-10 w-[700px] h-[700px] bg-oasis-teal rounded-full blur-[150px] opacity-30 mix-blend-screen pointer-events-none"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-oasis-pink rounded-full blur-[180px] opacity-20 pointer-events-none"></div>
+    <!-- Hero Section -->
+    <section class="relative min-h-[88vh] flex items-center justify-center overflow-hidden py-16 px-4 bg-slate-50">
+        <!-- Background Lighting FX (Light theme) -->
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-400/15 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-orange-300/10 rounded-full blur-[100px] pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-            <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-oasis-pink text-xs font-bold border border-oasis-pink/40 shadow-[0_0_15px_rgba(218,98,125,0.2)]">
-                    <i class="fa-solid fa-microchip animate-pulse"></i> Hardware IoT + Visión Artificial
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-blue-600 text-xs font-bold shadow-sm">
+                    <i class="fa-solid fa-flask-vial"></i> Innovación Universitaria CUGDL - UDG
                 </div>
-               
-                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight leading-[1.1] text-white drop-shadow-2xl">
-                    Agua Limpia,<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-oasis-teal via-oasis-pink to-oasis-magenta bg-animated-gradient">
-                        Inteligencia Pura.
-                    </span>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-slate-900">
+                    Detección Automatizada de <br>
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500">Microplásticos e Impurezas</span>
                 </h1>
-               
-                <p class="text-gray-300 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
-                    OASIS combina microcontroladores, óptica de precisión y redes neuronales en la nube para descubrir, contar y alertar sobre microplásticos invisibles en tu suministro de agua.
+                <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
+                    <strong>CHIPAWAK</strong> combina microcontroladores IoT, microscopía óptica y algoritmos de Visión por Computadora en la nube para inspeccionar, cuantificar y prevenir la exposición a microplásticos en el agua que consumes.
                 </p>
 
-                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-5 pt-4">
-                    <a href="#dashboard" class="px-8 py-4 rounded-xl bg-oasis-teal hover:bg-[#3d6975] text-white font-bold text-sm transition-all shadow-[0_0_20px_rgba(80,128,142,0.4)] flex items-center gap-3 border border-oasis-teal/50 hover:-translate-y-1">
-                        <i class="fa-solid fa-radar text-lg"></i> Iniciar Escaneo
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                    <a href="#dashboard" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-sm transition shadow-lg shadow-blue-500/30 flex items-center gap-2">
+                        <i class="fa-solid fa-gauge-high"></i> Abrir Dashboard Interactivo
                     </a>
-                    <a href="#negocio" class="px-8 py-4 rounded-xl glass-card hover:bg-white/10 text-white font-bold text-sm transition-all flex items-center gap-3 hover:-translate-y-1">
-                        <i class="fa-solid fa-tags text-oasis-pink"></i> Ver Costos
+                    <a href="#negocio" class="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm transition border border-slate-200 shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-briefcase"></i> Modelo de Negocio ($4,490)
                     </a>
                 </div>
 
-                <!-- Dark Stats -->
-                <div class="grid grid-cols-3 gap-6 pt-8 border-t border-white/10 text-left mt-8">
-                    <div>
-                        <div class="text-3xl font-black text-oasis-teal glow-text-teal">< 50µm</div>
-                        <div class="text-xs text-gray-400 font-medium mt-1 uppercase tracking-wider">Resolución</div>
+                <!-- Stats summary -->
+                <div class="grid grid-cols-3 gap-4 pt-8 border-t border-slate-200 text-left mt-8">
+                    <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm">
+                        <div class="text-2xl font-black text-blue-600">< 50 µm</div>
+                        <div class="text-xs text-slate-500 font-medium mt-1">Filtración y Captura</div>
                     </div>
-                    <div>
-                        <div class="text-3xl font-black text-oasis-pink glow-text-pink">Wi-Fi</div>
-                        <div class="text-xs text-gray-400 font-medium mt-1 uppercase tracking-wider">Telemetría</div>
+                    <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm">
+                        <div class="text-2xl font-black text-orange-500">$4,490 MXN</div>
+                        <div class="text-xs text-slate-500 font-medium mt-1">Costo Accesible</div>
                     </div>
-                    <div>
-                        <div class="text-3xl font-black text-oasis-magenta">24/7</div>
-                        <div class="text-xs text-gray-400 font-medium mt-1 uppercase tracking-wider">Monitoreo</div>
+                    <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm">
+                        <div class="text-2xl font-black text-purple-600">ESP32-CAM</div>
+                        <div class="text-xs text-slate-500 font-medium mt-1">Procesamiento Wi-Fi</div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-5 relative">
-                <!-- Decorative frame glow -->
-                <div class="absolute inset-0 bg-gradient-to-r from-oasis-teal to-oasis-magenta rounded-3xl blur-xl opacity-40"></div>
-               
-                <div class="glass-card rounded-3xl p-5 border border-white/20 relative overflow-hidden bg-[#0a1621]/80 backdrop-blur-xl">
-                    <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+            <!-- Hero Interactive Preview Graphic -->
+            <div class="lg:col-span-5">
+                <div class="glass-card rounded-3xl p-5 border border-slate-200 relative overflow-hidden">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                         <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_8px_red]"></span>
-                            <span class="w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_8px_yellow]"></span>
-                            <span class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_8px_green]"></span>
-                            <span class="text-xs text-gray-400 font-mono ml-3 font-semibold">sys/cam/stream_01</span>
+                            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-orange-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-green-400"></span>
+                            <span class="text-xs text-slate-500 font-mono ml-2 font-semibold">CHIPAWAK_VISION_01.jpg</span>
                         </div>
-                        <span class="text-[10px] text-oasis-pink font-mono font-bold flex items-center gap-2 border border-oasis-pink/30 px-2 py-1 rounded bg-oasis-pink/10">
-                            <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> LIVE
+                        <span class="text-xs text-blue-600 font-mono font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> ANÁLISIS ACTIVO
                         </span>
                     </div>
 
-                    <!-- Visual Chamber Simulation Box - Cyberpunk aesthetic -->
-                    <div class="relative bg-[#050b10] rounded-2xl border border-oasis-teal/30 aspect-video overflow-hidden flex items-center justify-center shadow-inner group">
+                    <!-- Visual Chamber Simulation Box (Light version) -->
+                    <div class="relative bg-white rounded-2xl border border-slate-200 aspect-video overflow-hidden flex items-center justify-center shadow-inner">
+                        <img src="https://images.unsplash.com/photo-1581093588401-fbb62a02f120?auto=format&fit=crop&w=800&q=80" alt="Cámara flujo" class="absolute inset-0 w-full h-full object-cover opacity-10">
                        
-                        <!-- Radar/Scanner line effect -->
-                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-oasis-teal/20 to-transparent h-[10%] w-full animate-[scan_3s_linear_infinite] z-0"></div>
-                        <style>
-                            @keyframes scan {
-                                0% { top: -10%; }
-                                100% { top: 110%; }
-                            }
-                        </style>
-
                         <!-- Grid overlay -->
-                        <div class="absolute inset-0 bg-[radial-gradient(rgba(80,128,142,0.3)_1px,transparent_1px)] [background-size:20px_20px] opacity-60"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px] opacity-20"></div>
 
-                        <!-- Data Overlay -->
-                        <div class="relative z-10 w-full h-full p-4 flex flex-col justify-between">
+                        <!-- Bounding boxes -->
+                        <div class="relative z-10 w-full h-full p-6 flex flex-col justify-between">
                             <div class="flex justify-between items-start">
-                                <div class="px-2 py-1 rounded bg-[#0a1621]/90 border border-oasis-teal/50 text-[10px] font-mono font-bold text-oasis-teal shadow-[0_0_10px_rgba(80,128,142,0.3)]">
-                                    [AI_DETECT]: 14 P/L
+                                <div class="px-2 py-1 rounded-md bg-blue-50 border border-blue-200 text-[11px] font-mono font-bold text-blue-700 shadow-sm">
+                                    [AI VISION] 14 Partículas
                                 </div>
-                                <div class="px-2 py-1 rounded bg-[#0a1621]/90 border border-oasis-magenta/50 text-[10px] font-mono font-bold text-oasis-pink shadow-[0_0_10px_rgba(218,98,125,0.3)]">
-                                    TURBIDITY: 1.25 NTU
+                                <div class="px-2 py-1 rounded-md bg-purple-50 border border-purple-200 text-[11px] font-mono font-bold text-purple-700 shadow-sm">
+                                    NTU: 1.25 (Óptimo)
                                 </div>
                             </div>
 
-                            <!-- Bounding boxes with high contrast -->
-                            <div class="absolute top-1/3 left-1/4 p-1.5 border border-oasis-pink bg-oasis-dark/80 rounded shadow-[0_0_10px_rgba(218,98,125,0.5)] text-[10px] text-white font-bold font-mono group-hover:scale-110 transition-transform cursor-crosshair">
-                                <i class="fa-solid fa-crosshairs text-oasis-pink"></i> FIBRA_PET (98%)
+                            <div class="absolute top-1/3 left-1/4 p-1.5 border border-orange-400 bg-white/90 rounded shadow-sm text-[10px] text-orange-600 font-bold font-mono">
+                                Microplástico (Fibra)
                             </div>
-                            <div class="absolute bottom-1/3 right-1/4 p-1.5 border border-oasis-teal bg-oasis-dark/80 rounded shadow-[0_0_10px_rgba(80,128,142,0.5)] text-[10px] text-white font-bold font-mono group-hover:scale-110 transition-transform cursor-crosshair">
-                                <i class="fa-solid fa-crosshairs text-oasis-teal"></i> FRAGMENTO
+                            <div class="absolute bottom-1/3 right-1/3 p-1.5 border border-blue-400 bg-white/90 rounded shadow-sm text-[10px] text-blue-600 font-bold font-mono">
+                                Fragmento PET
                             </div>
 
-                            <div class="flex justify-between items-end text-[9px] text-gray-400 font-mono font-bold bg-[#050b10]/80 p-2 rounded border border-white/10">
-                                <span>PUMP: <span class="text-green-400">ON</span></span>
-                                <span>LED_RING: <span class="text-oasis-pink">100%</span></span>
-                                <span>UPLINK: <span class="text-oasis-teal">45ms</span></span>
+                            <div class="flex justify-between items-end text-[10px] text-slate-500 font-mono font-bold bg-slate-50/90 p-2.5 rounded-lg border border-slate-200 shadow-sm">
+                                <span>BOMBA: ACTIVA</span>
+                                <span>LED: 100%</span>
+                                <span>WIFI: OK</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-5 flex items-center justify-between text-xs font-semibold text-gray-400 px-1">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-microscope text-oasis-teal p-1.5 bg-oasis-teal/20 rounded"></i> Celda Óptica</span>
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-server text-oasis-magenta p-1.5 bg-oasis-magenta/20 rounded"></i> Cluster IA</span>
+                    <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-500">
+                        <span><i class="fa-solid fa-microscope text-blue-600 mr-1"></i> Celda Óptica Acrílica</span>
+                        <span><i class="fa-solid fa-cloud text-purple-600 mr-1"></i> Servidor Nube</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="problema" class="py-24 px-4 bg-gradient-to-br from-oasis-teal via-[#43707c] to-oasis-teal border-y border-white/10 relative overflow-hidden">
-        <!-- Abstract shapes -->
-        <div class="absolute -top-24 -right-24 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-oasis-dark/50 to-transparent pointer-events-none"></div>
-
-        <div class="max-w-7xl mx-auto space-y-16 relative z-10">
-            <div class="text-center max-w-3xl mx-auto space-y-5">
-                <span class="px-4 py-1.5 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-widest border border-white/30 backdrop-blur-sm">
-                    El Problema Invisible
-                </span>
-                <h2 class="text-3xl sm:text-5xl font-black text-white drop-shadow-md">La Amenaza en tu Cisterna</h2>
-                <p class="text-white/80 text-base sm:text-lg leading-relaxed font-medium">
-                    El agua almacenada acumula microplásticos provenientes de la degradación de tuberías y exposición ambiental. Es invisible a simple vista, pero su impacto es real.
-                </p>
-            </div>
-
-            <!-- Colorful Impact Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div class="bg-oasis-dark/80 backdrop-blur-md rounded-3xl p-8 space-y-6 shadow-2xl border border-white/10 hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-oasis-pink/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-16 h-16 rounded-2xl bg-oasis-pink text-white flex items-center justify-center text-3xl font-bold shadow-[0_0_20px_rgba(218,98,125,0.5)]">
-                        <i class="fa-solid fa-lungs-virus"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white">Impacto Fisiológico</h3>
-                    <p class="text-gray-300 text-sm leading-relaxed">
-                        Los microplásticos atraviesan membranas, acumulándose en órganos vitales. OASIS detecta las partículas antes de que lleguen a tu vaso.
-                    </p>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-oasis-dark/80 backdrop-blur-md rounded-3xl p-8 space-y-6 shadow-2xl border border-white/10 hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-oasis-teal/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-16 h-16 rounded-2xl bg-white text-oasis-teal flex items-center justify-center text-3xl font-bold shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                        <i class="fa-solid fa-eye-slash"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white">Invisibilidad</h3>
-                    <p class="text-gray-300 text-sm leading-relaxed">
-                        Partículas menores a 100µm evaden los filtros comunes y el ojo humano. Nuestro microscopio digital revela lo oculto.
-                    </p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-oasis-dark/80 backdrop-blur-md rounded-3xl p-8 space-y-6 shadow-2xl border border-white/10 hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-oasis-magenta/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-16 h-16 rounded-2xl bg-oasis-magenta text-white flex items-center justify-center text-3xl font-bold shadow-[0_0_20px_rgba(165,56,96,0.5)]">
-                        <i class="fa-solid fa-city"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white">Riesgo Comunitario</h3>
-                    <p class="text-gray-300 text-sm leading-relaxed">
-                        Aljibes escolares y residenciales carecen de monitoreo preventivo continuo. OASIS escala para proteger comunidades enteras.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="ods" class="py-24 px-4 bg-gradient-to-r from-oasis-magenta to-oasis-pink relative">
-        <!-- Texture overlay -->
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20"></div>
-
-        <div class="max-w-7xl mx-auto space-y-16 relative z-10">
-            <div class="text-center max-w-3xl mx-auto space-y-4">
-                <span class="px-4 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-widest backdrop-blur-md border border-white/30">
-                    Agenda 2030
-                </span>
-                <h2 class="text-3xl sm:text-5xl font-black text-white">Alineación ODS</h2>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- ODS Cards with Heavy Glassmorphism -->
-                <div class="glass-card rounded-3xl p-8 hover:-translate-y-2 transition-transform text-center space-y-4 border border-white/30 bg-white/10">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-white text-oasis-magenta flex items-center justify-center text-4xl font-black shadow-lg">6</div>
-                    <h3 class="text-xl font-bold text-white">Agua Limpia</h3>
-                    <p class="text-sm text-white/80">Disponibilidad y gestión sostenible mediante monitoreo preciso.</p>
-                </div>
-               
-                <div class="glass-card rounded-3xl p-8 hover:-translate-y-2 transition-transform text-center space-y-4 border border-white/30 bg-white/10">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-white text-oasis-pink flex items-center justify-center text-4xl font-black shadow-lg">3</div>
-                    <h3 class="text-xl font-bold text-white">Salud y Bienestar</h3>
-                    <p class="text-sm text-white/80">Prevención de enfermedades por ingesta de polímeros.</p>
-                </div>
-
-                <div class="glass-card rounded-3xl p-8 hover:-translate-y-2 transition-transform text-center space-y-4 border border-white/30 bg-white/10">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-oasis-dark text-white flex items-center justify-center text-4xl font-black shadow-lg">12</div>
-                    <h3 class="text-xl font-bold text-white">Consumo</h3>
-                    <p class="text-sm text-white/80">Concientización sobre la huella plástica invisible.</p>
-                </div>
-
-                <div class="glass-card rounded-3xl p-8 hover:-translate-y-2 transition-transform text-center space-y-4 border border-white/30 bg-white/10">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-oasis-teal text-white flex items-center justify-center text-4xl font-black shadow-lg">14</div>
-                    <h3 class="text-xl font-bold text-white">Vida Submarina</h3>
-                    <p class="text-sm text-white/80">Evitar que efluentes urbanos contaminen cuerpos de agua.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="tecnologia" class="py-24 px-4 bg-oasis-dark border-y border-white/10">
+    <!-- Sección 1: El Problema a Resolver -->
+    <section id="problema" class="py-24 px-4 bg-white border-b border-slate-100">
         <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-3xl mx-auto space-y-4">
-                <span class="px-4 py-1.5 rounded-full bg-oasis-teal/20 text-oasis-teal text-xs font-bold uppercase tracking-widest border border-oasis-teal/40">
-                    Arquitectura de Hardware
-                </span>
-                <h2 class="text-3xl sm:text-5xl font-black text-white">Módulo Óptico IoT</h2>
+                <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold uppercase tracking-widest">Diagnóstico Crítico</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">La Amenaza Invisible en el Agua Potable</h2>
+                <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+                    El agua almacenada en cisternas y aljibes residenciales acumula partículas microscópicas de plástico provenientes de tuberías degradadas y escorrentía urbana, afectando la salud sin que nos demos cuenta.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-                <!-- High Tech SVG Diagram -->
-                <div class="lg:col-span-7 bg-[#0b1824] rounded-3xl p-6 shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10 relative">
-                    <h3 class="text-base font-bold text-white mb-6 flex items-center justify-between">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-microchip text-oasis-pink text-xl"></i> Celda de Muestreo</span>
-                        <span class="px-3 py-1 bg-oasis-dark text-oasis-teal text-xs rounded border border-oasis-teal/30 font-mono">IP67 Enclosure</span>
-                    </h3>
-
-                    <div class="relative bg-black/40 rounded-2xl p-4 border border-white/5 overflow-hidden">
-                        <svg class="w-full h-auto drop-shadow-lg" viewBox="0 0 700 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Glow definitions -->
-                            <defs>
-                                <filter id="glowPink" x="-20%" y="-20%" width="140%" height="140%">
-                                    <feGaussianBlur stdDeviation="5" result="blur" />
-                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                </filter>
-                                <filter id="glowTeal" x="-20%" y="-20%" width="140%" height="140%">
-                                    <feGaussianBlur stdDeviation="3" result="blur" />
-                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                </filter>
-                            </defs>
-
-                            <!-- Background Box IP67 -->
-                            <rect x="20" y="20" width="660" height="360" rx="16" stroke="#50808E" stroke-width="2" stroke-dasharray="6 6" fill="#13293D" fill-opacity="0.5"/>
-                           
-                            <!-- Pump -->
-                            <g transform="translate(50, 220)">
-                                <rect x="0" y="0" width="110" height="70" rx="8" fill="#1a3a55" stroke="#50808E" stroke-width="2"/>
-                                <text x="12" y="30" fill="#fff" font-family="sans-serif" font-size="11" font-weight="bold">Mini Bomba 5V</text>
-                                <text x="12" y="50" fill="#8cb3c0" font-family="sans-serif" font-size="9">Extracción Agua</text>
-                            </g>
-
-                            <!-- Flow Line animated -->
-                            <path d="M 160 255 L 240 255 L 240 160 L 280 160" stroke="#50808E" stroke-width="4" stroke-linecap="round" fill="none"/>
-                            <circle cx="200" cy="255" r="5" fill="#00ffcc" filter="url(#glowTeal)">
-                                <animate attributeName="cx" values="160;240" dur="1.5s" repeatCount="indefinite"/>
-                            </circle>
-
-                            <!-- Acrylic Chamber -->
-                            <g transform="translate(280, 90)">
-                                <rect x="0" y="0" width="160" height="150" rx="12" fill="#0b1824" stroke="#DA627D" stroke-width="2"/>
-                                <text x="15" y="25" fill="#fff" font-family="sans-serif" font-size="11" font-weight="bold">Celda Acrílica</text>
-                               
-                                <!-- Filter -->
-                                <circle cx="80" cy="85" r="40" fill="#13293D" stroke="#A53860" stroke-width="2" stroke-dasharray="3 3"/>
-                                <text x="50" y="90" fill="#DA627D" font-family="sans-serif" font-size="9" font-weight="bold">Malla 50µm</text>
-
-                                <!-- Microplastics (Glowing) -->
-                                <circle cx="70" cy="75" r="4" fill="#DA627D" filter="url(#glowPink)"/>
-                                <circle cx="92" cy="80" r="3" fill="#00ffcc"/>
-                                <circle cx="82" cy="98" r="4" fill="#fff"/>
-                            </g>
-
-                            <!-- ESP32-CAM -->
-                            <g transform="translate(480, 90)">
-                                <rect x="0" y="0" width="160" height="110" rx="10" fill="#1a3a55" stroke="#fff" stroke-width="1.5"/>
-                                <text x="15" y="25" fill="#fff" font-family="sans-serif" font-size="12" font-weight="bold">ESP32-CAM (IoT)</text>
-                                <text x="15" y="45" fill="#00ffcc" font-family="sans-serif" font-size="9">Anillo LED Activo</text>
-                                <circle cx="80" cy="75" r="18" fill="#0b1824" stroke="#DA627D" stroke-width="3"/>
-                                <circle cx="80" cy="75" r="6" fill="#fff" filter="url(#glowPink)"/>
-                            </g>
-
-                            <!-- Light Cone -->
-                            <path d="M 480 145 L 440 120 L 440 210 Z" fill="#DA627D" fill-opacity="0.15" stroke="#DA627D" stroke-dasharray="2 2" stroke-opacity="0.5"/>
-
-                            <!-- Wi-Fi Output -->
-                            <g transform="translate(480, 240)">
-                                <rect x="0" y="0" width="160" height="60" rx="10" fill="#A53860" fill-opacity="0.2" stroke="#DA627D" stroke-width="2"/>
-                                <text x="15" y="25" fill="#fff" font-family="sans-serif" font-size="10" font-weight="bold">📡 Cloud Analytics</text>
-                                <text x="15" y="45" fill="#fbcfe8" font-family="sans-serif" font-size="9">Tx Imagen / JSON</text>
-                            </g>
-                        </svg>
+            <!-- Grid de Impactos -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-card rounded-2xl p-8 space-y-5 glass-card-hover border-t-4 border-t-blue-500">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl font-bold">
+                        <i class="fa-solid fa-lungs"></i>
                     </div>
+                    <h3 class="text-xl font-bold text-slate-900">Riesgos a la Salud</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Los microplásticos pueden atravesar membranas celulares, acumulándose en los pulmones, torrente sanguíneo e hígado. Actúan como vectores de sustancias tóxicas.
+                    </p>
                 </div>
 
-                <!-- Description Steps -->
-                <div class="lg:col-span-5 space-y-4">
-                    <div class="flex items-start gap-5 p-6 rounded-2xl glass-card hover:bg-white/5 border border-white/5 transition group">
-                        <div class="w-12 h-12 rounded-full bg-oasis-teal/20 text-oasis-teal font-black flex items-center justify-center shrink-0 text-xl shadow-[0_0_15px_rgba(80,128,142,0.3)]">1</div>
-                        <div>
-                            <h4 class="font-bold text-white text-lg">Extracción Programada</h4>
-                            <p class="text-sm text-gray-400 mt-2">La bomba sumergible renueva la muestra de agua hacia la celda óptica de diagnóstico.</p>
-                        </div>
+                <div class="glass-card rounded-2xl p-8 space-y-5 glass-card-hover border-t-4 border-t-orange-500">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-3xl font-bold">
+                        <i class="fa-solid fa-eye-slash"></i>
                     </div>
-
-                    <div class="flex items-start gap-5 p-6 rounded-2xl glass-card hover:bg-white/5 border border-white/5 transition group">
-                        <div class="w-12 h-12 rounded-full bg-oasis-pink/20 text-oasis-pink font-black flex items-center justify-center shrink-0 text-xl shadow-[0_0_15px_rgba(218,98,125,0.3)]">2</div>
-                        <div>
-                            <h4 class="font-bold text-white text-lg">Retención 50µm</h4>
-                            <p class="text-sm text-gray-400 mt-2">Una malla ultrafina captura los polímeros suspendidos justo en el punto focal del microscopio.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5 p-6 rounded-2xl glass-card hover:bg-white/5 border border-white/5 transition group">
-                        <div class="w-12 h-12 rounded-full bg-oasis-magenta/20 text-oasis-magenta font-black flex items-center justify-center shrink-0 text-xl shadow-[0_0_15px_rgba(165,56,96,0.3)]">3</div>
-                        <div>
-                            <h4 class="font-bold text-white text-lg">Visión Macro</h4>
-                            <p class="text-sm text-gray-400 mt-2">Se activa el anillo LED y la lente macro captura imágenes de alta resolución del sedimento.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="dashboard" class="py-24 px-4 bg-[#08121a] relative border-b border-white/10">
-        <!-- Subtle Grid Background -->
-        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
-       
-        <div class="max-w-7xl mx-auto space-y-10 relative z-10">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-oasis-dark/50 p-6 rounded-3xl border border-white/10 backdrop-blur-md">
-                <div>
-                    <h2 class="text-3xl font-black text-white flex items-center gap-3">
-                        <i class="fa-solid fa-display text-oasis-pink"></i> Centro de Control
-                    </h2>
-                    <p class="text-gray-400 text-sm mt-2">Analítica y streaming en tiempo real.</p>
+                    <h3 class="text-xl font-bold text-slate-900">Invisibilidad y Turbidez</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Los métodos tradicionales omiten partículas de plásticos transparentes o pequeños. Las inspecciones visuales a simple vista dejan al usuario sin alertas preventivas.
+                    </p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-4">
-                    <button id="btn-sample" onclick="triggerSamplingCycle()" class="px-8 py-3.5 rounded-xl bg-oasis-teal hover:bg-[#3b6672] text-white font-bold text-sm transition-all shadow-[0_0_20px_rgba(80,128,142,0.5)] flex items-center gap-2 border border-[#6ba4b5]">
-                        <i class="fa-solid fa-power-off" id="sample-icon"></i> Forzar Escaneo
-                    </button>
-                    <div class="px-4 py-2 bg-black/40 rounded-lg border border-white/10 font-mono text-xs text-gray-400 text-right">
-                        <div>ÚLTIMO SYNC:</div>
-                        <div id="last-update" class="text-oasis-pink font-bold text-sm glow-text-pink">Hoy, 11:00 AM</div>
+                <div class="glass-card rounded-2xl p-8 space-y-5 glass-card-hover border-t-4 border-t-purple-500">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-3xl font-bold">
+                        <i class="fa-solid fa-building-columns"></i>
                     </div>
+                    <h3 class="text-xl font-bold text-slate-900">Infraestructura Urbana</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        En complejos educativos y residenciales, la falta de monitoreo continuo en cisternas comunitarias pone en riesgo a miles de personas diariamente.
+                    </p>
                 </div>
             </div>
 
-            <!-- Top Metric Cards with Dark Glowing Style -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div class="bg-[#0b1824] rounded-2xl p-6 border-b-4 border-oasis-teal shadow-lg relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 text-6xl text-white/5 group-hover:text-oasis-teal/20 transition-colors"><i class="fa-solid fa-disease"></i></div>
-                    <div class="text-xs text-gray-400 font-bold uppercase tracking-wide">Densidad Plástica</div>
-                    <div class="flex items-baseline justify-between mt-3">
-                        <span id="metric-count" class="text-5xl font-black text-white glow-text-teal">14</span>
-                        <span class="text-xs text-oasis-teal font-mono font-bold bg-oasis-teal/10 px-2 py-1 rounded">PART/L</span>
-                    </div>
-                </div>
-
-                <div class="bg-[#0b1824] rounded-2xl p-6 border-b-4 border-oasis-pink shadow-lg relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 text-6xl text-white/5 group-hover:text-oasis-pink/20 transition-colors"><i class="fa-solid fa-water"></i></div>
-                    <div class="text-xs text-gray-400 font-bold uppercase tracking-wide">Turbidez (NTU)</div>
-                    <div class="flex items-baseline justify-between mt-3">
-                        <span id="metric-turbidity" class="text-5xl font-black text-white glow-text-pink">1.25</span>
-                        <span class="text-xs text-oasis-pink font-mono font-bold bg-oasis-pink/10 px-2 py-1 rounded">ÓPTIMO</span>
-                    </div>
-                </div>
-
-                <div class="bg-[#0b1824] rounded-2xl p-6 border-b-4 border-green-500 shadow-lg relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 text-6xl text-white/5 group-hover:text-green-500/20 transition-colors"><i class="fa-solid fa-wifi"></i></div>
-                    <div class="text-xs text-gray-400 font-bold uppercase tracking-wide">Telemetría Red</div>
-                    <div class="flex items-baseline justify-between mt-3">
-                        <span id="metric-status" class="text-3xl font-black text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)]">ONLINE</span>
-                        <span class="text-xs text-green-400 font-mono font-bold">144ms</span>
-                    </div>
-                </div>
-
-                <div class="bg-[#0b1824] rounded-2xl p-6 border-b-4 border-oasis-magenta shadow-lg relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 text-6xl text-white/5 group-hover:text-oasis-magenta/20 transition-colors"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <div class="text-xs text-gray-400 font-bold uppercase tracking-wide">Riesgo Sanitario</div>
-                    <div class="flex items-baseline justify-between mt-3">
-                        <span id="metric-risk" class="text-3xl font-black text-oasis-magenta drop-shadow-[0_0_10px_rgba(165,56,96,0.5)]">MODERADO</span>
-                        <span class="text-xs text-oasis-magenta font-mono font-bold bg-oasis-magenta/10 px-2 py-1 rounded">LVL 2</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Optical Camera Mesh Canvas Dark -->
-                <div class="lg:col-span-5 bg-[#0b1824] rounded-3xl p-6 shadow-2xl border border-white/5 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-sm font-bold text-gray-300 flex items-center gap-2 uppercase tracking-wider">
-                            <i class="fa-solid fa-video text-oasis-teal"></i> Feed Óptico
-                        </h3>
-                        <span class="text-[10px] px-2 py-1 rounded bg-green-500/20 text-green-400 font-mono font-bold border border-green-500/30" id="sampling-state-badge">
-                            IDLE / READY
-                        </span>
-                    </div>
-
-                    <!-- Canvas Holder -->
-                    <div class="relative bg-black rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center p-3 shadow-inner">
-                        <canvas id="optical-canvas" width="400" height="300" class="w-full h-auto rounded-xl border border-white/5"></canvas>
-                    </div>
-
-                    <div class="mt-6 p-5 rounded-2xl bg-[#13293D]/50 border border-white/5 space-y-3 text-sm font-medium">
-                        <div class="flex justify-between text-gray-300 border-b border-white/5 pb-2">
-                            <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-oasis-teal shadow-[0_0_5px_#50808E]"></div> Fibras plásticas:</span>
-                            <span id="cat-fibers" class="font-mono text-lg font-bold text-oasis-teal">8</span>
-                        </div>
-                        <div class="flex justify-between text-gray-300 border-b border-white/5 pb-2">
-                            <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-oasis-pink shadow-[0_0_5px_#DA627D]"></div> Fragmentos:</span>
-                            <span id="cat-fragments" class="font-mono text-lg font-bold text-oasis-pink">4</span>
-                        </div>
-                        <div class="flex justify-between text-gray-300">
-                            <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-oasis-magenta shadow-[0_0_5px_#A53860]"></div> Microesferas:</span>
-                            <span id="cat-spheres" class="font-mono text-lg font-bold text-oasis-magenta">2</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Realtime Graph -->
-                <div class="lg:col-span-7 bg-[#0b1824] rounded-3xl p-6 shadow-2xl border border-white/5 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-sm font-bold text-gray-300 flex items-center gap-2 uppercase tracking-wider">
-                            <i class="fa-solid fa-chart-area text-oasis-pink"></i> Análisis Histórico
-                        </h3>
-                    </div>
-
-                    <div class="relative w-full h-[320px] bg-black/20 rounded-xl p-4 border border-white/5">
-                        <canvas id="realtimeChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="negocio" class="py-24 px-4 bg-oasis-dark border-b border-white/10">
-        <div class="max-w-7xl mx-auto space-y-12">
-            <div class="text-center max-w-3xl mx-auto space-y-4">
-                <span class="px-4 py-1.5 rounded-full glass-card text-oasis-teal text-xs font-bold uppercase tracking-widest border-oasis-teal/40">
-                    Escalabilidad
-                </span>
-                <h2 class="text-3xl sm:text-5xl font-black text-white">Costos de Prototipo</h2>
-            </div>
-
-            <div class="glass-card rounded-3xl p-2 sm:p-6 border border-white/10 shadow-2xl overflow-x-auto mx-auto max-w-4xl relative">
-                <div class="absolute left-0 top-0 w-2 h-full bg-gradient-to-b from-oasis-teal to-oasis-pink rounded-l-3xl"></div>
-               
-                <table class="w-full text-left text-sm border-collapse min-w-[600px] ml-4">
+            <!-- Comparison Table -->
+            <div class="glass-card rounded-3xl p-8 overflow-x-auto">
+                <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-code-compare text-blue-600"></i> Comparativa Técnica
+                </h3>
+                <table class="w-full text-left text-sm border-collapse min-w-[600px]">
                     <thead>
-                        <tr class="border-b border-white/10 text-gray-400 uppercase font-bold text-xs tracking-wider">
-                            <th class="py-4 px-4">Cant</th>
-                            <th class="py-4 px-4">Componente</th>
-                            <th class="py-4 px-4 hidden sm:table-cell">Descripción</th>
-                            <th class="py-4 px-4 text-right text-oasis-pink">Costo (MXN)</th>
+                        <tr class="border-b-2 border-slate-100 text-slate-500 text-xs uppercase font-bold">
+                            <th class="py-4 px-4">Característica</th>
+                            <th class="py-4 px-4">Inspección Visual</th>
+                            <th class="py-4 px-4">Laboratorio Físico</th>
+                            <th class="py-4 px-4 bg-blue-50 text-blue-700 rounded-t-xl">CHIPAWAK (IoT + IA)</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-white/5 text-gray-300">
-                        <tr class="hover:bg-white/5 transition-colors">
-                            <td class="py-4 px-4 font-mono font-bold text-oasis-teal">1</td>
-                            <td class="py-4 px-4 font-bold text-white">ESP32-CAM</td>
-                            <td class="py-4 px-4 hidden sm:table-cell text-xs">Unidad de procesamiento y captura.</td>
-                            <td class="py-4 px-4 text-right font-mono">$250</td>
+                    <tbody class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td class="py-4 px-4 font-bold text-slate-800">Detección de Plásticos</td>
+                            <td class="py-4 px-4 text-slate-400">Imposible a simple vista</td>
+                            <td class="py-4 px-4">Muy Alta Precisión</td>
+                            <td class="py-4 px-4 bg-blue-50/50 text-blue-700 font-bold"><i class="fa-solid fa-check text-green-500 mr-1"></i> Automatizada por Visión IA</td>
                         </tr>
-                        <tr class="hover:bg-white/5 transition-colors">
-                            <td class="py-4 px-4 font-mono font-bold text-oasis-teal">1</td>
-                            <td class="py-4 px-4 font-bold text-white">Sensor Turbidez</td>
-                            <td class="py-4 px-4 hidden sm:table-cell text-xs">Módulo óptico analógico.</td>
-                            <td class="py-4 px-4 text-right font-mono">$150</td>
+                        <tr>
+                            <td class="py-4 px-4 font-bold text-slate-800">Frecuencia</td>
+                            <td class="py-4 px-4">Esporádica</td>
+                            <td class="py-4 px-4">Semanas por toma</td>
+                            <td class="py-4 px-4 bg-blue-50/50 text-blue-700 font-bold">Tiempo Real / Programada</td>
                         </tr>
-                        <tr class="hover:bg-white/5 transition-colors">
-                            <td class="py-4 px-4 font-mono font-bold text-oasis-teal">1</td>
-                            <td class="py-4 px-4 font-bold text-white">Mini Bomba DC</td>
-                            <td class="py-4 px-4 hidden sm:table-cell text-xs">Muestreo activo de agua.</td>
-                            <td class="py-4 px-4 text-right font-mono">$80</td>
-                        </tr>
-                        <tr class="hover:bg-white/5 transition-colors">
-                            <td class="py-4 px-4 font-mono font-bold text-oasis-teal">1</td>
-                            <td class="py-4 px-4 font-bold text-white">Estructura Acrílica</td>
-                            <td class="py-4 px-4 hidden sm:table-cell text-xs">Celda y caja IP67.</td>
-                            <td class="py-4 px-4 text-right font-mono">$200</td>
-                        </tr>
-                        <tr class="bg-oasis-teal/10 font-bold border-t border-oasis-teal/30">
-                            <td colspan="2" class="py-5 px-4 text-right text-white sm:table-cell hidden">TOTAL HARDWARE:</td>
-                            <td colspan="1" class="py-5 px-4 text-right text-white sm:hidden">TOTAL:</td>
-                            <td class="py-5 px-4 text-right font-mono text-xl text-oasis-teal drop-shadow-md glow-text-teal">~ $680 MXN</td>
+                        <tr>
+                            <td class="py-4 px-4 font-bold text-slate-800">Costo</td>
+                            <td class="py-4 px-4">Bajo</td>
+                            <td class="py-4 px-4">Muy Elevado ($>50k USD)</td>
+                            <td class="py-4 px-4 bg-blue-50/50 text-purple-600 font-bold rounded-b-xl">Accesible (~ $4,490 MXN)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -623,44 +276,453 @@
         </div>
     </section>
 
-    <section id="equipo" class="py-24 px-4 bg-[#08121a]">
+    <!-- Sección 2: Objetivos de Desarrollo Sostenible (ODS) -->
+    <section id="ods" class="py-24 px-4 bg-slate-50 border-b border-slate-100 relative">
         <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-3xl mx-auto space-y-4">
-                <h2 class="text-3xl sm:text-5xl font-black text-white">Creadores</h2>
-                <p class="text-gray-400 font-medium tracking-wide">CUGDL - Universidad de Guadalajara</p>
+                <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-600 text-xs font-bold uppercase tracking-widest">Impacto Global</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Alineación con los ODS</h2>
+                <p class="text-slate-600 text-base leading-relaxed">
+                    CHIPAWAK conecta la calidad del agua continental con la salud comunitaria y la preservación del medio ambiente, alineándose con la Agenda 2030 de la ONU.
+                </p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Members -->
-                <div class="bg-gradient-to-b from-[#13293D] to-[#0b1824] rounded-3xl p-6 flex flex-col items-center text-center gap-4 border border-oasis-teal/20 hover:border-oasis-teal transition-all group shadow-xl">
-                    <div class="w-20 h-20 rounded-full bg-oasis-teal/10 flex items-center justify-center text-oasis-teal font-black text-2xl border-2 border-oasis-teal group-hover:scale-110 group-hover:bg-oasis-teal group-hover:text-white transition-all shadow-[0_0_15px_rgba(80,128,142,0.4)]">AP</div>
-                    <div>
-                        <h3 class="font-bold text-white text-base">Ana Isabel Pérez</h3>
-                        <p class="text-[10px] text-oasis-dark bg-oasis-teal px-2 py-0.5 rounded font-bold mt-2 uppercase tracking-wide">Negocios</p>
+                <!-- ODS 6 -->
+                <div class="glass-card rounded-2xl p-6 border-t-4 border-blue-500 space-y-4 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-4xl font-black text-blue-600">6</span>
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-faucet-drip"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Agua Limpia</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Garantiza la disponibilidad de agua segura mediante la detección temprana de contaminantes en depósitos residenciales.
+                    </p>
+                </div>
+
+                <!-- ODS 3 -->
+                <div class="glass-card rounded-2xl p-6 border-t-4 border-orange-500 space-y-4 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-4xl font-black text-orange-500">3</span>
+                        <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Salud y Bienestar</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Protege la salud pública al disminuir la ingesta de agentes sintéticos y micropartículas plásticas dañinas.
+                    </p>
+                </div>
+
+                <!-- ODS 12 -->
+                <div class="glass-card rounded-2xl p-6 border-t-4 border-purple-500 space-y-4 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-4xl font-black text-purple-600">12</span>
+                        <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-recycle"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Consumo Responsable</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Promueve la economía circular mediante la concientización y el monitoreo del impacto de plásticos de un solo uso.
+                    </p>
+                </div>
+
+                <!-- ODS 14 -->
+                <div class="glass-card rounded-2xl p-6 border-t-4 border-blue-400 space-y-4 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-4xl font-black text-blue-500">14</span>
+                        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-fish"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Vida Submarina</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Frena la cadena de contaminación oceánica monitoreando los efluentes en origen urbano antes de que desemboquen.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 3: Arquitectura Técnica -->
+    <section id="tecnologia" class="py-24 px-4 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto space-y-16">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest">Ingeniería & Hardware</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Módulo Óptico Autónomo</h2>
+                <p class="text-slate-600 text-base leading-relaxed">
+                    Operación automatizada de extracción, retención en celda acrílica, captura macro digital y procesamiento IoT en la nube.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                <!-- SVG Diagram adapted for Light Theme -->
+                <div class="lg:col-span-7 glass-card rounded-3xl p-6 shadow-md border border-slate-100">
+                    <h3 class="text-base font-bold text-slate-900 mb-6 flex items-center justify-between">
+                        <span class="flex items-center"><i class="fa-solid fa-microchip text-purple-600 mr-2 text-xl"></i> Diagrama Celda de Muestreo</span>
+                        <span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md font-mono font-bold">IP67 Enclosure</span>
+                    </h3>
+
+                    <div class="relative bg-slate-50 rounded-2xl p-4 border border-slate-200 overflow-hidden shadow-inner">
+                        <svg class="w-full h-auto drop-shadow-sm" viewBox="0 0 700 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background Box IP67 -->
+                            <rect x="20" y="20" width="660" height="360" rx="16" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="6 6" fill="#ffffff"/>
+                            <text x="40" y="50" fill="#64748b" font-family="sans-serif" font-size="12" font-weight="bold">CAJA ESTANCA IMPERMEABLE (IP67)</text>
+
+                            <!-- Pump -->
+                            <g transform="translate(50, 220)">
+                                <rect x="0" y="0" width="110" height="70" rx="8" fill="#f8fafc" stroke="#3b82f6" stroke-width="2"/>
+                                <text x="12" y="30" fill="#1e293b" font-family="sans-serif" font-size="11" font-weight="bold">Mini Bomba 5V</text>
+                                <text x="12" y="50" fill="#64748b" font-family="sans-serif" font-size="9">Entrada Aljibe</text>
+                            </g>
+
+                            <!-- Flow Line -->
+                            <path d="M 160 255 L 240 255 L 240 160 L 280 160" stroke="#3b82f6" stroke-width="4" stroke-linecap="round" fill="none"/>
+                            <circle cx="200" cy="255" r="4" fill="#2563eb">
+                                <animate attributeName="cx" values="160;240" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+
+                            <!-- Acrylic Chamber -->
+                            <g transform="translate(280, 90)">
+                                <rect x="0" y="0" width="160" height="150" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+                                <text x="15" y="25" fill="#1e40af" font-family="sans-serif" font-size="11" font-weight="bold">Celda Acrílica</text>
+                               
+                                <!-- Filter -->
+                                <circle cx="80" cy="85" r="40" fill="#dbeafe" stroke="#9333ea" stroke-width="2" stroke-dasharray="3 3"/>
+                                <text x="50" y="90" fill="#7e22ce" font-family="sans-serif" font-size="9" font-weight="bold">Malla 50µm</text>
+
+                                <!-- Microplastics -->
+                                <circle cx="70" cy="75" r="3" fill="#ea580c"/>
+                                <circle cx="92" cy="80" r="2" fill="#2563eb"/>
+                                <circle cx="82" cy="98" r="3" fill="#9333ea"/>
+                            </g>
+
+                            <!-- ESP32-CAM -->
+                            <g transform="translate(480, 90)">
+                                <rect x="0" y="0" width="160" height="110" rx="10" fill="#faf5ff" stroke="#9333ea" stroke-width="2"/>
+                                <text x="15" y="25" fill="#7e22ce" font-family="sans-serif" font-size="12" font-weight="bold">ESP32-CAM (IoT)</text>
+                                <text x="15" y="45" fill="#6b21a8" font-family="sans-serif" font-size="9">+ Iluminación LED</text>
+                                <circle cx="80" cy="75" r="18" fill="#1e293b" stroke="#9333ea" stroke-width="2"/>
+                                <circle cx="80" cy="75" r="6" fill="#e2e8f0"/>
+                            </g>
+
+                            <!-- Light Cone -->
+                            <path d="M 480 145 L 440 120 L 440 210 Z" fill="#9333ea" fill-opacity="0.1" stroke="#9333ea" stroke-dasharray="2 2"/>
+
+                            <!-- Wi-Fi Output -->
+                            <g transform="translate(480, 240)">
+                                <rect x="0" y="0" width="160" height="60" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+                                <text x="15" y="25" fill="#c2410c" font-family="sans-serif" font-size="10" font-weight="bold">📡 Conexión Cloud</text>
+                                <text x="15" y="45" fill="#9a3412" font-family="sans-serif" font-size="9">Envío Datos e Imagen</text>
+                            </g>
+
+                            <!-- Turbidity -->
+                            <g transform="translate(280, 270)">
+                                <rect x="0" y="0" width="160" height="50" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+                                <text x="15" y="25" fill="#475569" font-family="sans-serif" font-size="10" font-weight="bold">Sensor Turbidez</text>
+                                <text x="15" y="40" fill="#94a3b8" font-family="sans-serif" font-size="8">Monitoreo de opacidad</text>
+                            </g>
+
+                            <!-- Outlet -->
+                            <path d="M 440 180 L 650 180 L 650 350" stroke="#2563eb" stroke-width="3" stroke-linecap="round" fill="none"/>
+                            <text x="540" y="170" fill="#3b82f6" font-family="sans-serif" font-size="9" font-weight="bold">Retorno al aljibe</text>
+                        </svg>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-b from-[#13293D] to-[#0b1824] rounded-3xl p-6 flex flex-col items-center text-center gap-4 border border-oasis-pink/20 hover:border-oasis-pink transition-all group shadow-xl">
-                    <div class="w-20 h-20 rounded-full bg-oasis-pink/10 flex items-center justify-center text-oasis-pink font-black text-2xl border-2 border-oasis-pink group-hover:scale-110 group-hover:bg-oasis-pink group-hover:text-white transition-all shadow-[0_0_15px_rgba(218,98,125,0.4)]">GG</div>
-                    <div>
-                        <h3 class="font-bold text-white text-base">Gabriel González</h3>
-                        <p class="text-[10px] text-white bg-oasis-pink px-2 py-0.5 rounded font-bold mt-2 uppercase tracking-wide">IoT Hardware</p>
+                <!-- Description Steps -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center shrink-0 text-lg">1</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900">Extracción Programada</h4>
+                            <p class="text-sm text-slate-600 mt-1">El microcontrolador activa la bomba sumergible, renovando la muestra de agua en la celda acrílica de forma periódica.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 font-bold flex items-center justify-center shrink-0 text-lg">2</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900">Retención y Microfiltrado</h4>
+                            <p class="text-sm text-slate-600 mt-1">El agua fluye por una malla de 50µm. Los microplásticos quedan atrapados en el centro del campo de visión.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0 text-lg">3</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900">Captura e Iluminación</h4>
+                            <p class="text-sm text-slate-600 mt-1">Se enciende el anillo LED y la cámara ESP32-CAM captura una fotografía macro de alta resolución de la malla.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center shrink-0 text-lg">4</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900">Diagnóstico IA en Nube</h4>
+                            <p class="text-sm text-slate-600 mt-1">Los datos se transmiten vía Wi-Fi para el conteo automático y clasificación de partículas usando visión artificial.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 4: Dashboard Interactivo -->
+    <section id="dashboard" class="py-24 px-4 bg-slate-50 relative border-b border-slate-100">
+        <div class="max-w-7xl mx-auto space-y-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest inline-flex items-center gap-2 mb-3">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span> Simulador Activo
+                    </span>
+                    <h2 class="text-3xl font-extrabold text-slate-900">Dashboard de Control IoT</h2>
+                    <p class="text-slate-600 text-sm mt-2">Monitoreo en tiempo real de aljibes y sistemas de agua.</p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button id="btn-sample" onclick="triggerSamplingCycle()" class="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm transition shadow-lg shadow-orange-500/30 flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate" id="sample-icon"></i> Iniciar Muestreo
+                    </button>
+                    <div class="text-right font-mono text-xs text-slate-500">
+                        <div>Última actualización:</div>
+                        <div id="last-update" class="text-slate-900 font-bold text-sm">Hoy, 11:00 AM</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-blue-500 shadow-sm">
+                    <div class="text-xs text-slate-500 font-bold uppercase tracking-wide">Conteo Microplásticos</div>
+                    <div class="flex items-baseline justify-between mt-3">
+                        <span id="metric-count" class="text-4xl font-black text-blue-600">14</span>
+                        <span class="text-xs text-slate-400 font-mono font-bold">partículas/L</span>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-b from-[#13293D] to-[#0b1824] rounded-3xl p-6 flex flex-col items-center text-center gap-4 border border-oasis-magenta/20 hover:border-oasis-magenta transition-all group shadow-xl">
-                    <div class="w-20 h-20 rounded-full bg-oasis-magenta/10 flex items-center justify-center text-oasis-magenta font-black text-2xl border-2 border-oasis-magenta group-hover:scale-110 group-hover:bg-oasis-magenta group-hover:text-white transition-all shadow-[0_0_15px_rgba(165,56,96,0.4)]">CL</div>
-                    <div>
-                        <h3 class="font-bold text-white text-base">Olin Cisneros</h3>
-                        <p class="text-[10px] text-white bg-oasis-magenta px-2 py-0.5 rounded font-bold mt-2 uppercase tracking-wide">Software / IA</p>
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-purple-500 shadow-sm">
+                    <div class="text-xs text-slate-500 font-bold uppercase tracking-wide">Nivel de Turbidez</div>
+                    <div class="flex items-baseline justify-between mt-3">
+                        <span id="metric-turbidity" class="text-4xl font-black text-purple-600">1.25</span>
+                        <span class="text-xs text-slate-400 font-mono font-bold">NTU</span>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-b from-[#13293D] to-[#0b1824] rounded-3xl p-6 flex flex-col items-center text-center gap-4 border border-gray-500/30 hover:border-white transition-all group shadow-xl">
-                    <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center text-white font-black text-2xl border-2 border-white/50 group-hover:scale-110 group-hover:bg-white group-hover:text-oasis-dark transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]">CR</div>
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-green-500 shadow-sm">
+                    <div class="text-xs text-slate-500 font-bold uppercase tracking-wide">Estado Red IoT</div>
+                    <div class="flex items-baseline justify-between mt-3">
+                        <span id="metric-status" class="text-2xl font-black text-green-500">OPERATIVO</span>
+                        <span class="text-xs text-slate-400 font-mono font-bold">Wi-Fi OK</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-orange-500 shadow-sm">
+                    <div class="text-xs text-slate-500 font-bold uppercase tracking-wide">Alerta Sanitaria</div>
+                    <div class="flex items-baseline justify-between mt-3">
+                        <span id="metric-risk" class="text-2xl font-black text-orange-500">MODERADO</span>
+                        <span class="text-xs text-slate-400 font-mono font-bold">Nivel 2</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Optical Camera Mesh Canvas (Light Theme) -->
+                <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div>
-                        <h3 class="font-bold text-white text-base">Valentina Carbajal</h3>
-                        <p class="text-[10px] text-oasis-dark bg-white px-2 py-0.5 rounded font-bold mt-2 uppercase tracking-wide">Análisis ODS</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-camera text-blue-600"></i> Visión ESP32-CAM
+                            </h3>
+                            <span class="text-[11px] px-2 py-1 rounded bg-green-100 text-green-700 font-mono font-bold" id="sampling-state-badge">
+                                ESTADO: LISTO
+                            </span>
+                        </div>
+
+                        <!-- Canvas Holder -->
+                        <div class="relative bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center p-2 shadow-inner">
+                            <canvas id="optical-canvas" width="380" height="280" class="w-full h-auto rounded-xl bg-white"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-3 text-sm font-medium">
+                        <div class="flex justify-between text-slate-700">
+                            <span class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div> Fibras plásticas:</span>
+                            <span id="cat-fibers" class="font-bold text-blue-600">8</span>
+                        </div>
+                        <div class="flex justify-between text-slate-700">
+                            <span class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-500"></div> Fragmentos PET / PP:</span>
+                            <span id="cat-fragments" class="font-bold text-orange-500">4</span>
+                        </div>
+                        <div class="flex justify-between text-slate-700">
+                            <span class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-purple-500"></div> Microesferas:</span>
+                            <span id="cat-spheres" class="font-bold text-purple-600">2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realtime Graph -->
+                <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-purple-600"></i> Tendencias Analíticas
+                        </h3>
+                        <div class="flex gap-2 text-xs font-bold">
+                            <span class="px-2 py-1 rounded bg-blue-50 text-blue-600 border border-blue-200">
+                                Partículas
+                            </span>
+                            <span class="px-2 py-1 rounded bg-orange-50 text-orange-600 border border-orange-200">
+                                Turbidez
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-[300px]">
+                        <canvas id="realtimeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 5: Modelo de Negocio -->
+    <section id="negocio" class="py-24 px-4 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto space-y-16">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest">Viabilidad Comercial</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Estructura de Costes (Prototipo)</h2>
+                <p class="text-slate-600 text-base leading-relaxed">
+                    CHIPAWAK destaca por ser una solución altamente escalable y de bajo costo comparada con alternativas de laboratorio tradicionales.
+                </p>
+            </div>
+
+            <div class="bg-slate-50 rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm overflow-x-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-blue-600"></i> Desglose de Componentes
+                    </h3>
+                    <span class="px-4 py-1.5 rounded-full bg-orange-100 text-orange-600 text-sm font-bold shadow-sm">
+                        Total Estimado: $4,490 MXN
+                    </span>
+                </div>
+
+                <table class="w-full text-left text-sm border-collapse min-w-[650px]">
+                    <thead>
+                        <tr class="border-b-2 border-slate-200 text-slate-500 uppercase font-bold">
+                            <th class="py-3 px-3">Cant</th>
+                            <th class="py-3 px-3">Componente</th>
+                            <th class="py-3 px-3">Descripción</th>
+                            <th class="py-3 px-3 text-right">Costo (MXN)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-slate-700">
+                        <tr class="hover:bg-white transition">
+                            <td class="py-3 px-3 font-mono font-bold text-blue-600">1</td>
+                            <td class="py-3 px-3 font-bold text-slate-900">Módulo ESP32-CAM</td>
+                            <td class="py-3 px-3 text-sm">Cerebro principal, conexión Wi-Fi y captura de imágenes.</td>
+                            <td class="py-3 px-3 text-right font-mono font-medium">$230 - $300</td>
+                        </tr>
+                        <tr class="hover:bg-white transition">
+                            <td class="py-3 px-3 font-mono font-bold text-blue-600">1</td>
+                            <td class="py-3 px-3 font-bold text-slate-900">Sensor de Turbidez</td>
+                            <td class="py-3 px-3 text-sm">Monitoreo continuo de la opacidad.</td>
+                            <td class="py-3 px-3 text-right font-mono font-medium">$120 - $180</td>
+                        </tr>
+                        <tr class="hover:bg-white transition">
+                            <td class="py-3 px-3 font-mono font-bold text-blue-600">1</td>
+                            <td class="py-3 px-3 font-bold text-slate-900">Mini Bomba Sumergible</td>
+                            <td class="py-3 px-3 text-sm">Extracción de muestra hacia la celda.</td>
+                            <td class="py-3 px-3 text-right font-mono font-medium">$50 - $90</td>
+                        </tr>
+                        <tr class="hover:bg-white transition">
+                            <td class="py-3 px-3 font-mono font-bold text-blue-600">1</td>
+                            <td class="py-3 px-3 font-bold text-slate-900">Celda y Malla 50µm</td>
+                            <td class="py-3 px-3 text-sm">Acrílico con filtro fino para retención.</td>
+                            <td class="py-3 px-3 text-right font-mono font-medium">$60 - $120</td>
+                        </tr>
+                        <tr class="hover:bg-white transition">
+                            <td class="py-3 px-3 font-mono font-bold text-blue-600">1</td>
+                            <td class="py-3 px-3 font-bold text-slate-900">Caja Estanca IP67</td>
+                            <td class="py-3 px-3 text-sm">Protección impermeable.</td>
+                            <td class="py-3 px-3 text-right font-mono font-medium">$100 - $200</td>
+                        </tr>
+                        <tr class="hover:bg-white transition">
+                            <td class="py-3 px-3 font-mono font-bold text-blue-600">1</td>
+                            <td class="py-3 px-3 font-bold text-slate-900">Power Bank / Batería</td>
+                            <td class="py-3 px-3 text-sm">Alimentación portátil del sistema.</td>
+                            <td class="py-3 px-3 text-right font-mono font-medium">$150 - $250</td>
+                        </tr>
+                        <tr class="bg-blue-50 font-bold text-blue-900">
+                            <td colspan="3" class="py-4 px-3 text-right">INVERSIÓN TOTAL PROTOTIPO:</td>
+                            <td class="py-4 px-3 text-right font-mono text-base text-blue-700">~ $4,490 MXN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección 6: Integrantes del Equipo -->
+    <section id="equipo" class="py-24 px-4 bg-slate-50">
+        <div class="max-w-7xl mx-auto space-y-16">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-600 text-xs font-bold uppercase tracking-widest">Talento Universitario</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Equipo CHIPAWAK</h2>
+                <p class="text-slate-600 text-base leading-relaxed">
+                    Desarrollado por estudiantes de la Red Universitaria de Guadalajara (CUGDL / UDG).
+                </p>
+            </div>
+
+            <!-- Team Members Grid (Now 4 members based on request) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Member 1 -->
+                <div class="bg-white rounded-3xl p-6 flex flex-col items-center text-center gap-4 shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-105 transition-transform">
+                        AP
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Ana Isabel Pérez Velázquez</h3>
+                        <p class="text-xs text-blue-600 font-bold mt-1 uppercase tracking-wide">Investigación & Negocios</p>
+                        <p class="text-[11px] text-slate-500 mt-2 font-medium">CUGDL - UDG</p>
+                    </div>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="bg-white rounded-3xl p-6 flex flex-col items-center text-center gap-4 shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-105 transition-transform">
+                        GG
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Gabriel Hiram González G.</h3>
+                        <p class="text-xs text-orange-600 font-bold mt-1 uppercase tracking-wide">Hardware & IoT</p>
+                        <p class="text-[11px] text-slate-500 mt-2 font-medium">CUGDL - UDG</p>
+                    </div>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="bg-white rounded-3xl p-6 flex flex-col items-center text-center gap-4 shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-purple-500 to-blue-400 flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-105 transition-transform">
+                        CL
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Olin Emiliano Cisneros L.</h3>
+                        <p class="text-xs text-purple-600 font-bold mt-1 uppercase tracking-wide">Programación & Web</p>
+                        <p class="text-[11px] text-slate-500 mt-2 font-medium">CUGDL - UDG</p>
+                    </div>
+                </div>
+
+                <!-- Member 4 -->
+                <div class="bg-white rounded-3xl p-6 flex flex-col items-center text-center gap-4 shadow-sm border border-slate-100 hover:shadow-md transition group">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-600 to-orange-500 flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-105 transition-transform">
+                        CR
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Valentina Carbajal Rojas</h3>
+                        <p class="text-xs text-blue-600 font-bold mt-1 uppercase tracking-wide">Análisis Sanitario & ODS</p>
+                        <p class="text-[11px] text-slate-500 mt-2 font-medium">CUGDL - UDG</p>
                     </div>
                 </div>
             </div>
@@ -668,30 +730,31 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-black py-10 px-4 text-xs text-gray-500 border-t-2 border-oasis-pink">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-water text-oasis-pink text-lg"></i>
-                <span class="font-bold text-white uppercase tracking-widest text-sm">OASIS</span>
+    <footer class="bg-slate-900 py-12 px-4 text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl">
+                    <i class="fa-solid fa-droplet"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-white text-sm">CHIPAWAK IoT</span>
+                    <span class="block text-[11px] text-slate-400 mt-0.5">Red Universitaria - CUGDL</span>
+                </div>
             </div>
-            <p>© 2026 Plataforma IoT. Todos los derechos reservados.</p>
+            <p class="text-center">© 2026 CHIPAWAK. Plataforma de Monitoreo de Agua Potable.</p>
         </div>
     </footer>
 
+    <!-- JavaScript Interactive Logic -->
     <script>
-        // State
+        // Simulated IoT State Data
         let currentMicroplasticsCount = 14;
         let currentTurbidity = 1.25;
         let particlesList = [];
 
-        // Colors tailored for Dark Theme Canvas
-        const COLOR_TEAL = '#00ffcc'; // Brighter cyan for dark mode
-        const COLOR_PINK = '#ff719a'; // Brighter pink
-        const COLOR_MAGENTA = '#e74c82';
-
-        // Chart setup tailored for Dark Theme
+        // Chart setup tailored for Light Theme
         let realtimeChart;
-        const historyTimeLabels = ['10:00', '10:15', '10:30', '10:45', '11:00'];
+        const historyTimeLabels = ['10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM'];
         const microplasticsData = [18, 12, 15, 11, 14];
         const turbidityData = [1.8, 1.4, 1.5, 1.1, 1.25];
 
@@ -702,80 +765,61 @@
 
         function initChart() {
             const ctx = document.getElementById('realtimeChart').getContext('2d');
-           
-            // Custom plugin to add glowing effect to chart lines
-            const glowPlugin = {
-                id: 'glow',
-                beforeDatasetDraw(chart, args, options) {
-                    const { ctx } = chart;
-                    ctx.save();
-                    ctx.shadowColor = args.dataset.borderColor;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 0;
-                },
-                afterDatasetDraw(chart, args, options) {
-                    chart.ctx.restore();
-                }
-            };
-
-            Chart.register(glowPlugin);
-
             realtimeChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: historyTimeLabels,
                     datasets: [
                         {
-                            label: 'Partículas/L',
+                            label: 'Microplásticos (part/L)',
                             data: microplasticsData,
-                            borderColor: COLOR_TEAL,
-                            backgroundColor: 'rgba(0, 255, 204, 0.1)',
+                            borderColor: '#2563eb', // Blue-600
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
                             fill: true,
                             tension: 0.4,
                             yAxisID: 'y',
-                            borderWidth: 3,
-                            pointBackgroundColor: '#0b1824',
-                            pointBorderColor: COLOR_TEAL,
-                            pointBorderWidth: 2,
-                            pointRadius: 4
+                            pointBackgroundColor: '#2563eb'
                         },
                         {
                             label: 'Turbidez (NTU)',
                             data: turbidityData,
-                            borderColor: COLOR_PINK,
+                            borderColor: '#f97316', // Orange-500
                             backgroundColor: 'transparent',
                             borderDash: [5, 5],
                             tension: 0.4,
                             yAxisID: 'y1',
-                            borderWidth: 2,
-                            pointBackgroundColor: '#0b1824',
-                            pointBorderColor: COLOR_PINK,
-                            pointRadius: 4
+                            pointBackgroundColor: '#f97316'
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    color: '#9ca3af', // Axis text color
                     scales: {
                         x: {
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { font: { family: 'Inter', size: 10 } }
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            ticks: { color: '#64748b', font: { family: 'Inter', weight: 'bold' } }
                         },
                         y: {
-                            type: 'linear', display: true, position: 'left',
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: COLOR_TEAL, font: { family: 'Inter', weight: 'bold' } },
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            ticks: { color: '#2563eb', font: { family: 'Inter', weight: 'bold' } },
+                            title: { display: true, text: 'Partículas/L', color: '#2563eb', font: {weight: 'bold'} }
                         },
                         y1: {
-                            type: 'linear', display: true, position: 'right',
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
                             grid: { drawOnChartArea: false },
-                            ticks: { color: COLOR_PINK, font: { family: 'Inter', weight: 'bold' } },
+                            ticks: { color: '#f97316', font: { family: 'Inter', weight: 'bold' } },
+                            title: { display: true, text: 'NTU', color: '#f97316', font: {weight: 'bold'} }
                         }
                     },
-                    plugins: { legend: { display: false } }
+                    plugins: {
+                        legend: { display: false }
+                    }
                 }
             });
         }
@@ -786,100 +830,82 @@
             const width = canvas.width;
             const height = canvas.height;
 
-            // Clear Background (Deep Dark Blue)
-            ctx.fillStyle = '#050a0f';
+            // Clear (White background for light theme)
+            ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, width, height);
 
+            // Draw Fine Circular Mesh (Filter Grid)
             const centerX = width / 2;
             const centerY = height / 2;
-            const radius = 130;
+            const radius = 110;
 
-            // Circular frame (Microscope view)
+            // Circular frame
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#9333ea'; // Purple
+            ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Setup Clip for Grid and Particles
+            // Grid lines inside circle (Subtle gray)
             ctx.save();
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
             ctx.clip();
 
-            // Background of chamber
-            ctx.fillStyle = '#0a141d';
-            ctx.fill();
-
-            // Draw Fine Dark Cyan Mesh (Filter Grid)
-            ctx.strokeStyle = 'rgba(0, 255, 204, 0.15)';
-            ctx.lineWidth = 1;
-            for (let x = centerX - radius; x < centerX + radius; x += 15) {
-                ctx.beginPath(); ctx.moveTo(x, centerY - radius); ctx.lineTo(x, centerY + radius); ctx.stroke();
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.lineWidth = 1.5;
+            for (let x = centerX - radius; x < centerX + radius; x += 12) {
+                ctx.beginPath();
+                ctx.moveTo(x, centerY - radius);
+                ctx.lineTo(x, centerY + radius);
+                ctx.stroke();
             }
-            for (let y = centerY - radius; y < centerY + radius; y += 15) {
-                ctx.beginPath(); ctx.moveTo(centerX - radius, y); ctx.lineTo(centerX + radius, y); ctx.stroke();
+            for (let y = centerY - radius; y < centerY + radius; y += 12) {
+                ctx.beginPath();
+                ctx.moveTo(centerX - radius, y);
+                ctx.lineTo(centerX + radius, y);
+                ctx.stroke();
             }
 
-            // Generate particles if none
+            // Generate or redraw particles inside circle
             if (particlesList.length === 0) {
-                generateRandomParticles(currentMicroplasticsCount, centerX, centerY, radius - 20);
+                generateRandomParticles(currentMicroplasticsCount, centerX, centerY, radius - 15);
             }
 
-            // Draw glowing particles
+            // Draw particles
             particlesList.forEach(p => {
-                ctx.shadowBlur = 12;
-                ctx.shadowColor = p.color;
                 ctx.fillStyle = p.color;
-                ctx.strokeStyle = p.color;
-
                 if (p.type === 'fiber') {
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p.x + p.length, p.y + p.length / 2);
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 2.5;
+                    ctx.strokeStyle = p.color;
                     ctx.stroke();
                 } else if (p.type === 'sphere') {
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fill();
                 } else {
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x + p.size, p.y + p.size/2);
-                    ctx.lineTo(p.x + p.size/2, p.y + p.size);
-                    ctx.closePath();
-                    ctx.fill();
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
                 }
 
-                // AI Detection Box (Cyberpunk style)
-                ctx.shadowBlur = 0; // Turn off glow for bounding box
+                // AI Detection Box
                 ctx.strokeStyle = p.borderColor;
-                ctx.lineWidth = 1;
-                ctx.strokeRect(p.x - 7, p.y - 7, p.size + 14, p.size + 14);
-               
-                // Crosshairs
-                const len = 3;
-                ctx.beginPath();
-                ctx.moveTo(p.x-7, p.y-7); ctx.lineTo(p.x-7+len, p.y-7); // TL
-                ctx.moveTo(p.x-7, p.y-7); ctx.lineTo(p.x-7, p.y-7+len);
-                ctx.stroke();
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([2, 2]);
+                ctx.strokeRect(p.x - 6, p.y - 6, p.size + 12, p.size + 12);
+                ctx.setLineDash([]);
             });
 
             ctx.restore();
 
-            // Dark vignette effect over everything
-            const gradient = ctx.createRadialGradient(centerX, centerY, radius - 30, centerX, centerY, width);
-            gradient.addColorStop(0, 'rgba(5, 10, 15, 0)');
-            gradient.addColorStop(1, 'rgba(5, 10, 15, 1)');
+            // Outer vignette for focus effect (Light theme style)
+            const gradient = ctx.createRadialGradient(centerX, centerY, radius, centerX, centerY, width);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            gradient.addColorStop(1, 'rgba(241, 245, 249, 0.9)'); // Slate-100
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
-           
-            // HUD Text Overlay on canvas
-            ctx.fillStyle = 'rgba(0, 255, 204, 0.7)';
-            ctx.font = '10px monospace';
-            ctx.fillText("CAM_01_ACTIVE", 10, 20);
-            ctx.fillText("LENS: MACRO_50X", 10, 35);
         }
 
         function generateRandomParticles(count, cx, cy, r) {
@@ -899,20 +925,27 @@
                 const py = cy + Math.sin(angle) * dist;
 
                 let type = 'fiber';
-                let color = COLOR_TEAL;
-                let borderColor = 'rgba(0, 255, 204, 0.4)';
+                let color = '#2563eb'; // Blue
+                let borderColor = 'rgba(37, 99, 235, 0.5)';
 
                 if (i >= fiberCount && i < fiberCount + fragmentCount) {
-                    type = 'fragment'; color = COLOR_PINK; borderColor = 'rgba(255, 113, 154, 0.4)';
+                    type = 'fragment';
+                    color = '#f97316'; // Orange
+                    borderColor = 'rgba(249, 115, 22, 0.5)';
                 } else if (i >= fiberCount + fragmentCount) {
-                    type = 'sphere'; color = COLOR_MAGENTA; borderColor = 'rgba(231, 76, 130, 0.4)';
+                    type = 'sphere';
+                    color = '#9333ea'; // Purple
+                    borderColor = 'rgba(147, 51, 234, 0.5)';
                 }
 
                 particlesList.push({
-                    x: px, y: py,
-                    size: Math.floor(Math.random() * 5) + 3,
-                    length: Math.floor(Math.random() * 15) + 8,
-                    type: type, color: color, borderColor: borderColor
+                    x: px,
+                    y: py,
+                    size: Math.floor(Math.random() * 4) + 3,
+                    length: Math.floor(Math.random() * 12) + 8,
+                    type: type,
+                    color: color,
+                    borderColor: borderColor
                 });
             }
         }
@@ -923,26 +956,26 @@
             const badge = document.getElementById('sampling-state-badge');
 
             btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-            icon.classList.replace('fa-power-off', 'fa-spinner');
+            btn.classList.add('opacity-75');
             icon.classList.add('animate-spin');
            
-            badge.innerText = "PUMP_ON...";
-            badge.className = "text-[10px] px-2 py-1 rounded bg-blue-500/20 text-blue-400 font-mono font-bold animate-pulse border border-blue-500/30";
+            badge.innerText = "BOMBA ACTIVADA...";
+            badge.className = "text-[11px] px-2 py-1 rounded bg-orange-100 text-orange-700 font-mono font-bold animate-pulse";
 
             setTimeout(() => {
-                badge.innerText = "CAPTURING...";
-                badge.className = "text-[10px] px-2 py-1 rounded bg-yellow-500/20 text-yellow-400 font-mono font-bold animate-pulse border border-yellow-500/30";
-            }, 1000);
+                badge.innerText = "CAPTURANDO IMAGEN...";
+                badge.className = "text-[11px] px-2 py-1 rounded bg-blue-100 text-blue-700 font-mono font-bold animate-pulse";
+            }, 1200);
 
             setTimeout(() => {
-                badge.innerText = "AI_ANALYSIS...";
-                badge.className = "text-[10px] px-2 py-1 rounded bg-oasis-pink/20 text-oasis-pink font-mono font-bold animate-pulse border border-oasis-pink/30";
-            }, 2000);
+                badge.innerText = "PROCESANDO IA...";
+                badge.className = "text-[11px] px-2 py-1 rounded bg-purple-100 text-purple-700 font-mono font-bold animate-pulse";
+            }, 2400);
 
             setTimeout(() => {
-                currentMicroplasticsCount = Math.floor(Math.random() * 15) + 5;
-                currentTurbidity = (Math.random() * 1.5 + 0.5).toFixed(2);
+                // Generate new simulation values
+                currentMicroplasticsCount = Math.floor(Math.random() * 12) + 8;
+                currentTurbidity = (Math.random() * 1.2 + 0.8).toFixed(2);
 
                 document.getElementById('metric-count').innerText = currentMicroplasticsCount;
                 document.getElementById('metric-turbidity').innerText = currentTurbidity;
@@ -951,21 +984,27 @@
                 const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 document.getElementById('last-update').innerText = "Hoy, " + timeStr;
 
-                historyTimeLabels.shift(); historyTimeLabels.push(timeStr);
-                microplasticsData.shift(); microplasticsData.push(currentMicroplasticsCount);
-                turbidityData.shift(); turbidityData.push(parseFloat(currentTurbidity));
+                // Update chart
+                historyTimeLabels.shift();
+                historyTimeLabels.push(timeStr);
+                microplasticsData.shift();
+                microplasticsData.push(currentMicroplasticsCount);
+                turbidityData.shift();
+                turbidityData.push(parseFloat(currentTurbidity));
 
                 realtimeChart.update();
+
+                // Regenerate Canvas
                 particlesList = [];
                 drawOpticalCanvas();
 
+                // Reset UI
                 btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.remove('opacity-75');
                 icon.classList.remove('animate-spin');
-                icon.classList.replace('fa-spinner', 'fa-power-off');
-                badge.innerText = "IDLE / READY";
-                badge.className = "text-[10px] px-2 py-1 rounded bg-green-500/20 text-green-400 font-mono font-bold border border-green-500/30";
-            }, 3000);
+                badge.innerText = "ESTADO: LISTO";
+                badge.className = "text-[11px] px-2 py-1 rounded bg-green-100 text-green-700 font-mono font-bold";
+            }, 3600);
         }
     </script>
 </body>
